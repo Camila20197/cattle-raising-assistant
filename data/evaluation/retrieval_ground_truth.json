@@ -1,0 +1,62 @@
+[
+  {
+    "question": "¿Qué reducción de la excreción viral observó el estudio de ivermectina frente al grupo control?",
+    "expected_chunk_ids": [
+      "INTA_CICVyA_InstitutodeVirologia_Maidana_SS_Efecto_antiviral_de_la_ivermectina.pdf:1:3"
+    ]
+  },
+  {
+    "question": "¿Cuáles son las medidas convencionales de control del BoAHV-1 en bovinos?",
+    "expected_chunk_ids": [
+      "INTA_CICVyA_InstitutodeVirologia_Maidana_SS_Efecto_antiviral_de_la_ivermectina.pdf:2:4"
+    ]
+  },
+  {
+    "question": "¿Qué riesgo plantea la falta de reservas forrajeras durante la sequía?",
+    "expected_chunk_ids": [
+      "INTA_CREntreRíos_EEAConcepcióndelUruguay_GorelikZonis_YG_Impacto_sequía_ganadería_bovina_Gualeguaychu.pdf:1:2"
+    ]
+  },
+  {
+    "question": "¿Cuánto dura aproximadamente la fase parasítica de Rhipicephalus microplus sobre el bovino?",
+    "expected_chunk_ids": [
+      "INTA_CRSantaFe_EEARafaela_Nava_S_Guia_identificacion_especies_garrapatas_Entre_Rios.pdf:6:1"
+    ]
+  },
+  {
+    "question": "¿Qué especies de garrapatas pueden encontrarse con mayor frecuencia como larvas y ninfas en bovinos de Entre Ríos?",
+    "expected_chunk_ids": [
+      "INTA_CRSantaFe_EEARafaela_Nava_S_Guia_identificacion_especies_garrapatas_Entre_Rios.pdf:28:1"
+    ]
+  },
+  {
+    "question": "¿Qué enfermedad causa el alfaherpesvirus bovino 1 en el ganado vacuno?",
+    "expected_chunk_ids": [
+      "INTA_CICVyA_InstitutodeVirologia_Maidana_SS_Efecto_antiviral_de_la_ivermectina.pdf:2:3"
+    ]
+  },
+  {
+    "question": "¿Existen tratamientos antivirales veterinarios para inhibir la replicación del BoAHV-1 en bovinos?",
+    "expected_chunk_ids": [
+      "INTA_CICVyA_InstitutodeVirologia_Maidana_SS_Efecto_antiviral_de_la_ivermectina.pdf:2:4"
+    ]
+  },
+  {
+    "question": "¿Qué signos clínicos puede causar la infección por BoAHV-1?",
+    "expected_chunk_ids": [
+      "INTA_CICVyA_InstitutodeVirologia_Maidana_SS_Efecto_antiviral_de_la_ivermectina.pdf:2:5"
+    ]
+  },
+  {
+    "question": "¿Qué problemas puede provocar la infestación por Otobius megnini en bovinos?",
+    "expected_chunk_ids": [
+      "INTA_CRSantaFe_EEARafaela_Nava_S_Guia_identificacion_especies_garrapatas_Entre_Rios.pdf:5:2"
+    ]
+  },
+  {
+    "question": "¿Qué especies de garrapatas se incluyen en la guía para bovinos de Entre Ríos?",
+    "expected_chunk_ids": [
+      "INTA_CRSantaFe_EEARafaela_Nava_S_Guia_identificacion_especies_garrapatas_Entre_Rios.pdf:7:1"
+    ]
+  }
+]
