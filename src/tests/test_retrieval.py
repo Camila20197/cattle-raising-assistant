@@ -11,11 +11,13 @@ INDEXED_CHUNKS_PATH = Path("data/processed/indexed_chunks.jsonl")
 
 
 def load_jsonl(path: Path) -> list[dict]:
+    """Load a JSONL file and return a list of dictionaries."""
     with path.open("r", encoding="utf-8") as file:
         return [json.loads(line) for line in file]
 
 
 def print_results(title: str, results: list[dict]) -> None:
+    """Print search results in a readable format."""
     print(f"\n{'=' * 70}")
     print(title)
     print("=" * 70)
