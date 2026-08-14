@@ -28,7 +28,7 @@ from collections import deque
 from pathlib import Path
 from typing import Callable
 
-from google.genai import errors as genai_errors
+from groq import APIConnectionError, InternalServerError, RateLimitError
 
 from src.generation.rag import answer_question, build_prompt, build_prompt_concise, format_context
 from src.generation.judge import judge_answer
@@ -41,13 +41,10 @@ TOP_K = 5
 MAX_RETRIES = 3
 RETRY_DELAY_SECONDS = 15
 
-# The free tier caps gemini-3.5-flash at a small number of requests PER DAY
-# (confirmed: 20/day on this project, as of the error we hit). Each question
-# costs 2 calls per prompt (generate + judge), so with 2 prompts that's 4
-# calls/question. EVAL_SAMPLE_SIZE=4 -> 16 calls, leaving margin for retries
-# within a single day's quota. Raise it later if you enable billing, or run
-# it across multiple days -- the resumability below makes that safe.
-EVAL_SAMPLE_SIZE = 4
+# Groq's free-tier daily cap is far higher than Gemini's -- the full 10
+# questions fit comfortably. Kept as a named constant so it's still one
+# place to change if you tune it later.
+EVAL_SAMPLE_SIZE = 10
 
 # Free-tier RPM limit for gemini-3.5-flash generateContent (separate from
 # the daily cap above -- both apply, and both matter).
@@ -73,32 +70,18 @@ def throttle() -> None:
     _recent_call_times.append(time.monotonic())
 
 
-def _is_rate_limit_error(error: genai_errors.ClientError) -> bool:
-    return "RESOURCE_EXHAUSTED" in str(error) or "429" in str(error)
-
-
-def _is_daily_quota_error(error: genai_errors.ClientError) -> bool:
-    return "PerDay" in str(error) or "RequestsPerDay" in str(error)
-
-
-class DailyQuotaExceeded(Exception):
-    """Raised when the free-tier DAILY request cap is hit (not fixable by waiting a minute)."""
-
-
 def call_with_retry(func: Callable, *args, **kwargs):
     for attempt in range(1, MAX_RETRIES + 1):
         throttle()
         try:
             return func(*args, **kwargs)
-        except genai_errors.ClientError as error:
-            if _is_daily_quota_error(error):
-                raise DailyQuotaExceeded(str(error)) from error
-            if not _is_rate_limit_error(error) or attempt == MAX_RETRIES:
+        except RateLimitError as error:
+            if attempt == MAX_RETRIES:
                 raise
-            print(f"    Cuota por minuto alcanzada, esperando {RATE_LIMIT_WINDOW_SECONDS}s "
+            print(f"    Cuota alcanzada, esperando {RATE_LIMIT_WINDOW_SECONDS}s "
                   f"(intento {attempt}/{MAX_RETRIES})...")
             time.sleep(RATE_LIMIT_WINDOW_SECONDS)
-        except genai_errors.ServerError as error:
+        except (InternalServerError, APIConnectionError) as error:
             if attempt == MAX_RETRIES:
                 raise
             print(f"    Error transitorio ({error}), reintentando en {RETRY_DELAY_SECONDS}s "
@@ -204,11 +187,10 @@ def main():
 
         print(f"\nEvaluando Prompt B ({len(questions)} preguntas)...")
         evaluate_prompt("prompt_b", build_prompt_concise, questions, chunks, results)
-    except DailyQuotaExceeded:
-        print("\nSe alcanzó la cuota DIARIA gratuita del modelo. Lo ya calculado quedó "
-              f"guardado en {RESULTS_PATH}. Esperá al reset diario (medianoche hora del "
-              "Pacífico, aprox.) y volvé a correr este mismo comando -- va a continuar "
-              "desde donde quedó, sin gastar cuota de nuevo en lo ya hecho.")
+    except RateLimitError:
+        print("\nSe alcanzó un límite de cuota que no se resolvió tras los reintentos. Lo ya "
+              f"calculado quedó guardado en {RESULTS_PATH}. Esperá un momento y volvé a correr "
+              "este mismo comando -- va a continuar desde donde quedó.")
         return
 
     print_report(summarize(results["prompt_a"]), summarize(results["prompt_b"]))

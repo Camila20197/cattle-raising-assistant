@@ -1,12 +1,11 @@
-"""Prompt construction and Gemini generation for the RAG application."""
+"""Prompt construction and Groq generation for the RAG application."""
 
-from google.genai import types
+from src.generation.groq_client import GENERATION_MODEL, get_groq_client
 
-from src.retrieval.vector_search import get_client
-
-GENERATION_MODEL = "gemini-3.5-flash"
 GENERATION_TEMPERATURE = 0.1
+GENERATION_MAX_OUTPUT_TOKENS = 2_048
 NO_ANSWER_MESSAGE = "No se pudo generar una respuesta para esta pregunta. Intentá reformularla."
+TRUNCATED_MESSAGE = "La respuesta se cortó antes de terminar. Probá reformular la pregunta de forma más específica."
 
 
 def format_context(chunks: list[dict[str, str | int | float]]) -> str:
@@ -98,24 +97,33 @@ def answer_question(
     if not chunks:
         raise ValueError("At least one retrieved chunk is required to answer a question")
 
-    client = get_client()
-    response = client.models.generate_content(
+    client = get_groq_client()
+    response = client.chat.completions.create(
         model=GENERATION_MODEL,
-        contents=prompt_builder(question, chunks),
-        config=types.GenerateContentConfig(
-            max_output_tokens=1_000,
-            temperature=GENERATION_TEMPERATURE,
-            thinking_config=types.ThinkingConfig(thinking_level="low"),
-        ),
+        messages=[{"role": "user", "content": prompt_builder(question, chunks)}],
+        temperature=GENERATION_TEMPERATURE,
+        max_tokens=GENERATION_MAX_OUTPUT_TOKENS,
     )
 
-    if not response.text:
+    choice = response.choices[0]
+    text = choice.message.content
+
+    if choice.finish_reason == "length":
+        # Groq's (OpenAI-style) signal that the response was cut off before
+        # the model finished -- same failure mode we hit with Gemini, same
+        # reasoning for not silently returning the cut-off text.
+        return {
+            "answer": TRUNCATED_MESSAGE,
+            "sources": extract_sources(chunks),
+        }
+
+    if not text:
         return {
             "answer": NO_ANSWER_MESSAGE,
             "sources": extract_sources(chunks),
         }
 
     return {
-        "answer": response.text.strip(),
+        "answer": text.strip(),
         "sources": extract_sources(chunks),
     }

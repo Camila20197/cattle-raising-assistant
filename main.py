@@ -1,17 +1,9 @@
-"""FastAPI application exposing the cattle-health RAG assistant.
-
-Run locally with:
-    uv run uvicorn main:app --reload
-
-Then try it at http://127.0.0.1:8000/docs (interactive Swagger UI, generated
-automatically by FastAPI from the models below).
-"""
-
 import json
 from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import RedirectResponse
 from pydantic import BaseModel, Field
 
 from src.generation.rag import answer_question
@@ -65,6 +57,14 @@ class Source(BaseModel):
 class AskResponse(BaseModel):
     answer: str
     sources: list[Source]
+
+
+@app.get("/", include_in_schema=False)
+def root() -> RedirectResponse:
+    """Send anyone who lands on the bare URL straight to the interactive docs,
+    instead of a bare 404 -- convenient for humans, and one less thing to
+    explain in the README."""
+    return RedirectResponse(url="/docs")
 
 
 @app.get("/health")

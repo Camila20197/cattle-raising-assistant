@@ -1,0 +1,106 @@
+{
+  "prompt_a": {
+    "¿Qué reducción de la excreción viral observó el estudio de ivermectina frente al grupo control?": {
+      "relevance": "RELEVANT",
+      "grounded": true,
+      "explanation": "The answer directly addresses the question by providing the specific reduction in viral excretion observed in the study, and this information is supported by the context provided in Source 1. The answer accurately quotes the reduction of 1.5-2.25 log in comparison to the control group."
+    },
+    "¿Cuáles son las medidas convencionales de control del BoAHV-1 en bovinos?": {
+      "relevance": "RELEVANT",
+      "grounded": true,
+      "explanation": "The answer directly addresses the question about conventional control measures for BoAHV-1 in bovines, citing vacunación and medidas de higiene as stated in the provided context. This information is accurately supported by the context, specifically on page 1 of the document INTA_CICVyA_InstitutodeVirologia_Maidana_SS_Efecto_antiviral_de_la_ivermectina.pdf."
+    },
+    "¿Qué riesgo plantea la falta de reservas forrajeras durante la sequía?": {
+      "relevance": "RELEVANT",
+      "grounded": true,
+      "explanation": "The answer directly addresses the question about the risk posed by the lack of forage reserves during a drought, citing specific pages from the provided context. The response only includes information present in the given sources, making it both relevant and grounded."
+    },
+    "¿Cuánto dura aproximadamente la fase parasítica de Rhipicephalus microplus sobre el bovino?": {
+      "relevance": "RELEVANT",
+      "grounded": true,
+      "explanation": "The answer directly addresses the question about the duration of the parasitic phase of Rhipicephalus microplus on bovines and provides a specific time frame supported by the context. The information is accurately extracted from the provided source, INTA_CRSantaFe_EEARafaela_Nava_S_Guia_identificacion_especies_garrapatas_Entre_Rios.pdf, page 6."
+    },
+    "¿Qué especies de garrapatas pueden encontrarse con mayor frecuencia como larvas y ninfas en bovinos de Entre Ríos?": {
+      "relevance": "RELEVANT",
+      "grounded": true,
+      "explanation": "The answer directly addresses the question by naming the species of ticks found as larvae and nymphs on cattle in Entre Ríos, and it does so based on information explicitly provided in the context from page 28 of the referenced document."
+    },
+    "¿Qué enfermedad causa el alfaherpesvirus bovino 1 en el ganado vacuno?": {
+      "relevance": "RELEVANT",
+      "grounded": true,
+      "explanation": "The answer fully addresses the question by identifying the diseases caused by the alfaherpesvirus bovino 1, including rinotraqueítis infecciosa bovina, vulvovaginitis pustular infecciosa, and balanopostitis, and all the information is supported by the provided context."
+    },
+    "¿Existen tratamientos antivirales veterinarios para inhibir la replicación del BoAHV-1 en bovinos?": {
+      "relevance": "PARTLY_RELEVANT",
+      "grounded": true,
+      "explanation": "The answer is partly relevant because it mentions the lack of antiviral treatments for BoAHV-1 in bovinos and suggests ivermectina as a potential complementary treatment, but does not fully address the question of existing antiviral treatments. The answer is grounded because it only uses information present in the provided context."
+    },
+    "¿Qué signos clínicos puede causar la infección por BoAHV-1?": {
+      "relevance": "RELEVANT",
+      "grounded": true,
+      "explanation": "The answer fully addresses the question about the clinical signs caused by BoAHV-1 infection, providing specific details from the context. The information is directly supported by the provided sources, specifically pages 2 of the document INTA_CICVyA_InstitutodeVirologia_Maidana_SS_Efecto_antiviral_de_la_ivermectina.pdf."
+    },
+    "¿Qué problemas puede provocar la infestación por Otobius megnini en bovinos?": {
+      "relevance": "RELEVANT",
+      "grounded": true,
+      "explanation": "The answer directly addresses the question about the problems caused by Otobius megnini infestation in bovines, and it is fully supported by the provided context from INTA_CRSantaFe_EEARafaela_Nava_S_Guia_identificacion_especies_garrapatas_Entre_Rios.pdf, page 5."
+    },
+    "¿Qué especies de garrapatas se incluyen en la guía para bovinos de Entre Ríos?": {
+      "relevance": "RELEVANT",
+      "grounded": true,
+      "explanation": "The answer fully addresses the question by listing the species of ticks included in the guide for bovines in Entre Ríos, and every factual claim in the answer is supported by the provided context, specifically page 7 of the document."
+    }
+  },
+  "prompt_b": {
+    "¿Qué reducción de la excreción viral observó el estudio de ivermectina frente al grupo control?": {
+      "relevance": "RELEVANT",
+      "grounded": true,
+      "explanation": "The answer directly addresses the question about the reduction of viral excretion observed in the ivermectin study compared to the control group, and it is supported by the information provided in Source 1. The answer provides a clear and specific reduction range of 1.5-2.25 log, which is directly mentioned in the context."
+    },
+    "¿Cuáles son las medidas convencionales de control del BoAHV-1 en bovinos?": {
+      "relevance": "RELEVANT",
+      "grounded": true,
+      "explanation": "The answer fully addresses the question about conventional measures for controlling BoAHV-1 in bovines, citing vacunación and medidas de higiene as key methods, and it does so based on information directly provided in the context."
+    },
+    "¿Qué riesgo plantea la falta de reservas forrajeras durante la sequía?": {
+      "relevance": "RELEVANT",
+      "grounded": true,
+      "explanation": "The answer fully addresses the question about the risks posed by the lack of forage reserves during drought, providing specific details and evidence from the context. Every factual claim in the answer is supported by the provided sources, ensuring the response is both relevant and grounded in the given context."
+    },
+    "¿Cuánto dura aproximadamente la fase parasítica de Rhipicephalus microplus sobre el bovino?": {
+      "relevance": "RELEVANT",
+      "grounded": true,
+      "explanation": "The answer directly addresses the question by providing the duration of the parasitic phase of Rhipicephalus microplus on bovines, and this information is supported by the context provided in Source 1. The answer accurately quotes the duration as 21-23 days, which is explicitly mentioned in the context."
+    },
+    "¿Qué especies de garrapatas pueden encontrarse con mayor frecuencia como larvas y ninfas en bovinos de Entre Ríos?": {
+      "relevance": "RELEVANT",
+      "grounded": true,
+      "explanation": "The answer directly addresses the question by naming the species of ticks that can be found as larvae and nymphs on cattle in Entre Ríos, and it does so based on information explicitly provided in the context. The answer is fully supported by the content of the document INTA_CRSantaFe_EEARafaela_Nava_S_Guia_identificacion_especies_garrapatas_Entre_Rios.pdf, page 28."
+    },
+    "¿Qué enfermedad causa el alfaherpesvirus bovino 1 en el ganado vacuno?": {
+      "relevance": "RELEVANT",
+      "grounded": true,
+      "explanation": "The answer fully addresses the question by stating that the alfaherpesvirus bovino 1 causes rinotraqueítis infecciosa bovina, vulvovaginitis pustular infecciosa, and balanopostitis in cattle, and all the information provided is supported by the context."
+    },
+    "¿Existen tratamientos antivirales veterinarios para inhibir la replicación del BoAHV-1 en bovinos?": {
+      "relevance": "PARTLY_RELEVANT",
+      "grounded": true,
+      "explanation": "The answer is partly relevant because it addresses the question about antiviral treatments for BoAHV-1 in bovinos, but it also provides additional information that is not directly asked. The answer is grounded because all factual claims are supported by the context provided."
+    },
+    "¿Qué signos clínicos puede causar la infección por BoAHV-1?": {
+      "relevance": "RELEVANT",
+      "grounded": true,
+      "explanation": "The answer fully addresses the question about the clinical signs caused by BoAHV-1 infection, providing specific details from the context. The information is directly supported by the context, specifically from pages 2 of the document INTA_CICVyA_InstitutodeVirologia_Maidana_SS_Efecto_antiviral_de_la_ivermectina.pdf."
+    },
+    "¿Qué problemas puede provocar la infestación por Otobius megnini en bovinos?": {
+      "relevance": "RELEVANT",
+      "grounded": true,
+      "explanation": "The answer fully addresses the question about the problems caused by Otobius megnini infestation in bovines, and all the information provided is directly supported by Source 1. The response accurately lists the potential issues without introducing any unsupported claims."
+    },
+    "¿Qué especies de garrapatas se incluyen en la guía para bovinos de Entre Ríos?": {
+      "relevance": "RELEVANT",
+      "grounded": true,
+      "explanation": "The answer fully addresses the question by listing the species of ticks included in the guide for bovines in Entre Ríos, and every factual claim is supported by the provided context, specifically Source 3."
+    }
+  }
+}
