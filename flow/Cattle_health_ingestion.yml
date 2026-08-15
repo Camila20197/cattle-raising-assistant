@@ -1,0 +1,20 @@
+id: cattle_health_ingestion
+namespace: cattle.assistant
+
+tasks:
+  - id: run_ingestion
+    type: io.kestra.plugin.scripts.shell.Commands
+
+    containerImage: cattle-raising-assistant-api
+    taskRunner:
+      type: io.kestra.plugin.scripts.runner.docker.Docker
+      volumes:
+        - cattle_raising_assistant_app_data:/app/data
+    env:
+      GEMINI_API_KEY: "{{ envs.gemini_api_key }}"
+    commands:
+      - cd /app && uv run python -m src.ingestion.run_ingestion
+triggers:
+  - id: weekly_refresh
+    type: io.kestra.plugin.core.trigger.Schedule
+    cron: "0 3 * * 1"
