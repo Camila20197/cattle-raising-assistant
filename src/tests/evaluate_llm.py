@@ -1,26 +1,3 @@
-"""Compare two generation prompts (A: detailed, B: concise) using an LLM judge.
-
-For a sample of questions from the ground truth, retrieves context with BM25
-keyword search (the best-performing retrieval method per
-evaluate_retrieval.py) and generates an answer with both prompt variants. An
-LLM judge then scores each answer for relevance and groundedness, and the
-script reports the percentage of RELEVANT and grounded answers per prompt.
-
-Resilience:
-- Each per-question step is retried with backoff on transient server errors
-  (5xx), and paced with a proactive rate limiter to respect the per-minute
-  quota.
-- Results are written to disk after EVERY question (not just at the end),
-  so a crash never discards already-computed (already-paid-for) judgments.
-- The script is resumable: on start, it loads whatever is already in
-  RESULTS_PATH and skips any (prompt, question) pair already judged. If you
-  hit the free-tier DAILY quota (a hard stop, not something retries can
-  fix), just wait for the daily reset and re-run the same command — it will
-  pick up exactly where it left off, at zero extra cost.
-
-NOTE: adjust the two imports below to match where you placed rag.py and
-judge.py in your project (this assumes src/generation/).
-"""
 
 import json
 import time
@@ -41,15 +18,10 @@ TOP_K = 5
 MAX_RETRIES = 3
 RETRY_DELAY_SECONDS = 15
 
-# Groq's free-tier daily cap is far higher than Gemini's -- the full 10
-# questions fit comfortably. Kept as a named constant so it's still one
-# place to change if you tune it later.
 EVAL_SAMPLE_SIZE = 10
 
-# Free-tier RPM limit for gemini-3.5-flash generateContent (separate from
-# the daily cap above -- both apply, and both matter).
 RATE_LIMIT_CALLS_PER_MINUTE = 5
-RATE_LIMIT_WINDOW_SECONDS = 65  # 60s window + a safety margin
+RATE_LIMIT_WINDOW_SECONDS = 65  
 
 _recent_call_times: deque[float] = deque()
 

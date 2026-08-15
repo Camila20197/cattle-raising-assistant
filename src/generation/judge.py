@@ -1,14 +1,3 @@
-"""LLM-as-a-judge evaluation for generated RAG answers.
-
-Since there is no single "correct" text for a generated answer, quality is
-scored by asking an LLM to judge it against the question and the context it
-was allowed to use, on two axes: whether it actually answers the question
-(relevance), and whether every claim in it is backed by the context
-(groundedness, the axis that matters most for a veterinary-adjacent
-assistant that must not invent health information).
-
-"""
-
 import json
 
 from src.generation.groq_client import get_groq_client
