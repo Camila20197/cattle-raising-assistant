@@ -9,9 +9,3 @@ wheels/
 # Virtual environments
 .venv
 .env
-
-# Raw data
-data/raw/
-
-# Processed data
-data/processed/
