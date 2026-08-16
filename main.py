@@ -1,12 +1,14 @@
 import json
 from contextlib import asynccontextmanager
 from pathlib import Path
+from typing import Literal
 
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel, Field
 
 from src.generation.rag import answer_question
+from src.monitoring.db import init_db, log_conversation, log_feedback
 from src.retrieval.keyword_search import build_bm25_index, search_chunks
 
 CHUNKS_PATH = Path("data/processed/chunks.jsonl")
@@ -24,10 +26,12 @@ def load_jsonl(path: Path) -> list[dict]:
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Load the corpus and build the BM25 index once, before serving traffic."""
+    """Load the corpus, build the BM25 index, and prepare the monitoring
+    tables once, before serving traffic."""
     chunks = load_jsonl(CHUNKS_PATH)
     app_state["chunks"] = chunks
     app_state["bm25"] = build_bm25_index(chunks)
+    init_db()
     yield
     app_state.clear()
 
@@ -55,8 +59,15 @@ class Source(BaseModel):
 
 
 class AskResponse(BaseModel):
+    conversation_id: int
     answer: str
     sources: list[Source]
+
+
+class FeedbackRequest(BaseModel):
+    conversation_id: int
+    rating: Literal["up", "down"]
+    comment: str | None = None
 
 
 @app.get("/", include_in_schema=False)
@@ -87,10 +98,20 @@ def ask(request: AskRequest) -> AskResponse:
     )
 
     if not retrieved:
-        return AskResponse(
-            answer="No encontré información relacionada en los documentos disponibles.",
-            sources=[],
-        )
+        answer = "No encontré información relacionada en los documentos disponibles."
+        conversation_id = log_conversation(question, answer, sources=[])
+        return AskResponse(conversation_id=conversation_id, answer=answer, sources=[])
 
     result = answer_question(question, retrieved)
-    return AskResponse(answer=result["answer"], sources=result["sources"])
+    conversation_id = log_conversation(question, result["answer"], sources=result["sources"])
+
+    return AskResponse(
+        conversation_id=conversation_id, answer=result["answer"], sources=result["sources"]
+    )
+
+
+@app.post("/feedback")
+def feedback(request: FeedbackRequest) -> dict[str, str]:
+    """Record a thumbs up/down (and optional comment) for a previous /ask response."""
+    log_feedback(request.conversation_id, request.rating, request.comment)
+    return {"status": "ok"}

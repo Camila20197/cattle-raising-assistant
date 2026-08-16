@@ -1,0 +1,10 @@
+[theme]
+base = "dark"
+primaryColor = "#7CB342"
+backgroundColor = "#0E1117"
+secondaryBackgroundColor = "#1C2620"
+textColor = "#F5F5F0"
+
+# Paleta que usan los gráficos nativos (bar_chart, line_chart) cuando no se
+# especifica un color puntual -- tonos verde/amarillo campo.
+chartCategoricalColors = ["#4C9A2A", "#F9A825", "#7CB342", "#FBC02D", "#2E7D32", "#FFCA28"]

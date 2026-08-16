@@ -8,8 +8,11 @@ dependencies = [
     "fastapi>=0.141.1",
     "google-genai>=1.0.0",
     "groq>=1.6.0",
+    "pandas>=3.0.5",
+    "psycopg[binary]>=3.3.4",
     "pymupdf>=1.28.0",
     "python-dotenv>=1.1.0",
     "rank-bm25>=0.2.2",
+    "streamlit>=1.61.1",
     "uvicorn[standard]>=0.52.1",
 ]
