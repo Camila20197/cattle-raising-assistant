@@ -1,6 +1,6 @@
 # 🐄 Cattle Raising Assistant
 
-An AI-powered RAG, Retrieval-Augmented Generation, assistant that helps cattle producers quickly consult INTA's technical studies on animal health, instead of manually searching through long, scattered PDF reports.
+An AI-powered RAG (Retrieval-Augmented Generation) assistant that helps cattle producers quickly consult INTA's (Instituto Nacional de Tecnología Agropecuaria) technical studies on animal health, instead of manually searching through long, scattered PDF reports.
 
 ## 📑 Table of Contents
 
@@ -19,7 +19,7 @@ An AI-powered RAG, Retrieval-Augmented Generation, assistant that helps cattle p
 
 ## ❓ Problem Description
 
-INTA Argentina's National Institute of Agricultural Technology publishes valuable technical research on cattle health — disease prevention, parasite identification, drought impact on livestock, vaccination guidelines, and more. This information is critical for producers, but it lives scattered across dozens of long, dense PDF reports that are not designed for quick lookup. A producer facing a concrete, time-sensitive question; e.g. "what tick species affect cattle in my region?" or "how does drought affect weight gain?" has to manually search through multiple documents to find a reliable, sourced answer.
+INTA (Argentina's national agricultural technology institute) publishes valuable technical research on cattle health — disease prevention, parasite identification, drought impact on livestock, vaccination guidelines, and more. This information is critical for producers, but it lives scattered across dozens of long, dense PDF reports that are not designed for quick lookup. A producer facing a concrete, time-sensitive question (e.g. "what tick species affect cattle in my region?" or "how does drought affect weight gain?") has to manually search through multiple documents to find a reliable, sourced answer.
 
 This project addresses that gap by building an AI agent that:
 
@@ -45,14 +45,14 @@ The full pipeline:
 
 - Python 3.x
 - [uv](https://docs.astral.sh/uv/) — package and project management
-- [Google Gemini API](https://aistudio.google.com/prompts/new_chat) — `gemini-embedding-2`, used only for vector search embeddings
+- Google Gemini API — `gemini-embedding-2`, used only for vector search embeddings
 - [Groq API](https://console.groq.com/) — `llama-3.3-70b-versatile`, used for answer generation and LLM-as-a-judge evaluation (fast, free-tier friendly)
 - [rank_bm25](https://pypi.org/project/rank-bm25/) — BM25 keyword retrieval
 - [FastAPI](https://fastapi.tiangolo.com/) — HTTP interface (`POST /ask`, `POST /feedback`, `GET /health`)
 - [PostgreSQL](https://www.postgresql.org/) — stores conversations and user feedback
 - [Streamlit](https://streamlit.io/) — monitoring dashboard
 - [Kestra](https://kestra.io/) — orchestrates and automates the ingestion pipeline
-- [Docker & Docker Compose](https://www.docker.com/) — the full stack (API, Postgres, dashboard, Kestra) runs as one unit
+- Docker & Docker Compose — the full stack (API, Postgres, dashboard, Kestra) runs as one unit
 
 ## 📊 Retrieval Evaluation
 
@@ -125,7 +125,7 @@ The dashboard uses a green/yellow color theme (`.streamlit/config.toml`) matchin
 
 ## 💬 Sample Questions
 
-Questions to try against `POST /ask` (via `/docs` or curl). **The assistant always answers in Spanish**, regardless of whether the question is asked in English or Spanish — this is a deliberate design choice, since the target users, Argentine cattle producers, are Spanish speakers; the bilingual list below is meant for demoing the assistant to a non-Spanish-speaking audience.
+Questions to try against `POST /ask` (via `/docs` or curl). **The assistant always answers in Spanish**, regardless of whether the question is asked in English or Spanish — this is a deliberate design choice, since the target users (Argentine cattle producers) are Spanish speakers; the bilingual list below is meant for demoing the assistant to a non-Spanish-speaking audience.
 
 ### On-topic (grounded in the INTA documents)
 
@@ -234,6 +234,7 @@ Ideas for future improvement, beyond what's built:
 - **Improve ingestion to pull updates automatically from INTA's website**: today, ingestion re-processes whatever PDFs are already in `data/raw/`. A more complete version would have the Kestra flow check INTA's publications page for new reports and download them automatically, so the knowledge base stays current without anyone manually adding files.
 - **Best practices**: evaluate document re-ranking and query rewriting (hybrid search is already evaluated — see [Retrieval Evaluation](#-retrieval-evaluation)).
 - **Cloud deployment**: deploy to Google Cloud Platform, provisioned with Terraform, with dbt for any warehouse-side transformations. This would also unblock a live BigQuery + Looker Studio connection for Monitoring, instead of the local Postgres + Streamlit setup used today.
+- **API deployment to Cloud Run**: a deployment of the API to Google Cloud Run was attempted but did not succeed — the build completed successfully and the same image runs correctly via Docker Compose, but the revision failed with a generic "Container import failed" error at the Cloud Run platform level, with no application logs produced (the container never reached the point of starting Python). Getting this working is expected to be revisited in the future, with more time to investigate the platform-level cause.
 
 ## 🪐 About the Author
 
