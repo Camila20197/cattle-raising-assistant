@@ -1,37 +1,40 @@
-import json
+import logging
 from contextlib import asynccontextmanager
-from pathlib import Path
 from typing import Literal
 
-from fastapi import FastAPI, HTTPException
-from fastapi.responses import RedirectResponse
+from fastapi import FastAPI, HTTPException, Request
+from fastapi.responses import JSONResponse, RedirectResponse
 from pydantic import BaseModel, Field
 
+from src.config import get_settings
+from src.generation.groq_client import LLMError, ModelUnavailableError
 from src.generation.rag import answer_question
+from src.jsonl import read_jsonl
 from src.monitoring.db import init_db, log_conversation, log_feedback
 from src.retrieval.keyword_search import build_bm25_index, search_chunks
 
-CHUNKS_PATH = Path("data/processed/chunks.jsonl")
-TOP_K = 5
+NO_DOCUMENTS_MESSAGE = "No encontré información relacionada en los documentos disponibles."
+
+logger = logging.getLogger("cattle_assistant")
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s: %(message)s")
 
 # Holds the corpus and the BM25 index built once at startup, shared across
 # every request. See build_bm25_index's docstring for why this matters.
 app_state: dict = {}
 
 
-def load_jsonl(path: Path) -> list[dict]:
-    with path.open("r", encoding="utf-8") as file:
-        return [json.loads(line) for line in file]
-
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Load the corpus, build the BM25 index, and prepare the monitoring
     tables once, before serving traffic."""
-    chunks = load_jsonl(CHUNKS_PATH)
+    settings = get_settings()
+    chunks = read_jsonl(settings.chunks_path)
     app_state["chunks"] = chunks
     app_state["bm25"] = build_bm25_index(chunks)
     init_db()
+    logger.info(
+        "Loaded %s chunks; generation model: %s", len(chunks), settings.generation_model
+    )
     yield
     app_state.clear()
 
@@ -42,7 +45,7 @@ app = FastAPI(
         "RAG assistant that answers cattle-health questions grounded in "
         "INTA technical reports, with source citations."
     ),
-    version="0.1.0",
+    version="0.2.0",
     lifespan=lifespan,
 )
 
@@ -62,12 +65,31 @@ class AskResponse(BaseModel):
     conversation_id: int
     answer: str
     sources: list[Source]
+    model: str = Field(description="LLM that generated the answer.")
 
 
 class FeedbackRequest(BaseModel):
     conversation_id: int
     rating: Literal["up", "down"]
     comment: str | None = None
+
+
+@app.exception_handler(ModelUnavailableError)
+def model_unavailable_handler(request: Request, error: ModelUnavailableError) -> JSONResponse:
+    """A retired/unknown model is a configuration problem, not a server crash:
+    answer 503 with a message that says exactly what to change, instead of an
+    opaque 500."""
+    logger.error("%s", error)
+    return JSONResponse(status_code=503, content={"detail": str(error)})
+
+
+@app.exception_handler(LLMError)
+def llm_error_handler(request: Request, error: LLMError) -> JSONResponse:
+    logger.error("LLM provider error: %s", error)
+    return JSONResponse(
+        status_code=503,
+        content={"detail": "The language model is temporarily unavailable. Please try again."},
+    )
 
 
 @app.get("/", include_in_schema=False)
@@ -80,10 +102,11 @@ def root() -> RedirectResponse:
 
 @app.get("/health")
 def health() -> dict[str, str]:
-    """Liveness check. Deliberately does not call Gemini: it must stay fast
+    """Liveness check. Deliberately does not call the LLM: it must stay fast
     and free, since it can be polled frequently by an orchestrator or load
-    balancer once this is deployed."""
-    return {"status": "ok"}
+    balancer once this is deployed. It reports the configured model so a
+    stale configuration is easy to spot."""
+    return {"status": "ok", "generation_model": get_settings().generation_model}
 
 
 @app.post("/ask", response_model=AskResponse)
@@ -93,20 +116,36 @@ def ask(request: AskRequest) -> AskResponse:
     if not question:
         raise HTTPException(status_code=400, detail="question must not be empty")
 
+    settings = get_settings()
     retrieved = search_chunks(
-        question, app_state["chunks"], top_k=TOP_K, bm25=app_state["bm25"]
+        question, app_state["chunks"], top_k=settings.top_k, bm25=app_state["bm25"]
     )
 
     if not retrieved:
-        answer = "No encontré información relacionada en los documentos disponibles."
-        conversation_id = log_conversation(question, answer, sources=[])
-        return AskResponse(conversation_id=conversation_id, answer=answer, sources=[])
+        conversation_id = log_conversation(
+            question, NO_DOCUMENTS_MESSAGE, sources=[], generation_model="none"
+        )
+        return AskResponse(
+            conversation_id=conversation_id,
+            answer=NO_DOCUMENTS_MESSAGE,
+            sources=[],
+            model="none",
+        )
 
-    result = answer_question(question, retrieved)
-    conversation_id = log_conversation(question, result["answer"], sources=result["sources"])
+    result = answer_question(question, retrieved, model=settings.generation_model)
+    conversation_id = log_conversation(
+        question,
+        result["answer"],
+        sources=result["sources"],
+        generation_model=settings.generation_model,
+    )
+    logger.info("Answered conversation %s with %s sources", conversation_id, len(result["sources"]))
 
     return AskResponse(
-        conversation_id=conversation_id, answer=result["answer"], sources=result["sources"]
+        conversation_id=conversation_id,
+        answer=result["answer"],
+        sources=result["sources"],
+        model=settings.generation_model,
     )
 
 

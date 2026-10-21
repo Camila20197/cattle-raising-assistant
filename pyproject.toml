@@ -1,13 +1,14 @@
 [project]
 name = "cattle-raising-assistant"
-version = "0.1.0"
-description = "Add your description here"
+version = "0.2.0"
+description = "RAG assistant that answers cattle-health questions from INTA technical reports, with source citations."
 readme = "README.md"
 requires-python = ">=3.14"
 dependencies = [
     "fastapi>=0.141.1",
     "google-genai>=1.0.0",
     "groq>=1.6.0",
+    "httpx>=0.28.1",
     "pandas>=3.0.5",
     "psycopg[binary]>=3.3.4",
     "pymupdf>=1.28.0",
@@ -16,3 +17,12 @@ dependencies = [
     "streamlit>=1.61.1",
     "uvicorn[standard]>=0.52.1",
 ]
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

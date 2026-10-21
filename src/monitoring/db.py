@@ -29,6 +29,10 @@ def init_db() -> None:
             )
             """
         )
+        # Added after the first release: ALTER keeps existing databases working.
+        conn.execute(
+            "ALTER TABLE conversations ADD COLUMN IF NOT EXISTS generation_model TEXT"
+        )
         conn.execute(
             """
             CREATE TABLE IF NOT EXISTS feedback (
@@ -49,16 +53,25 @@ def log_conversation(
     sources: list[dict[str, str | int]],
     retrieval_method: str = "bm25",
     prompt_variant: str = "A",
+    generation_model: str | None = None,
 ) -> int:
     """Store a question/answer exchange and return its new conversation id."""
     with get_connection() as conn:
         row = conn.execute(
             """
-            INSERT INTO conversations (question, answer, sources, retrieval_method, prompt_variant)
-            VALUES (%s, %s, %s, %s, %s)
+            INSERT INTO conversations
+                (question, answer, sources, retrieval_method, prompt_variant, generation_model)
+            VALUES (%s, %s, %s, %s, %s, %s)
             RETURNING id
             """,
-            (question, answer, json.dumps(sources), retrieval_method, prompt_variant),
+            (
+                question,
+                answer,
+                json.dumps(sources),
+                retrieval_method,
+                prompt_variant,
+                generation_model,
+            ),
         ).fetchone()
         conn.commit()
         return row[0]

@@ -1,9 +1,14 @@
-"""Prompt construction and Groq generation for the RAG application."""
+"""Prompt construction and answer generation for the RAG application.
 
-from src.generation.groq_client import GENERATION_MODEL, get_groq_client
+The user-facing answers stay in Spanish on purpose: the target users are
+Argentine cattle producers. Code, logs and evaluation output are in English.
+"""
 
-GENERATION_TEMPERATURE = 0.1
-GENERATION_MAX_OUTPUT_TOKENS = 2_048
+from typing import Callable
+
+from src.config import get_settings
+from src.generation.groq_client import complete
+
 NO_ANSWER_MESSAGE = "No se pudo generar una respuesta para esta pregunta. Intentá reformularla."
 TRUNCATED_MESSAGE = "La respuesta se cortó antes de terminar. Probá reformular la pregunta de forma más específica."
 
@@ -86,44 +91,35 @@ def extract_sources(chunks: list[dict[str, str | int | float]]) -> list[dict[str
 def answer_question(
     question: str,
     chunks: list[dict[str, str | int | float]],
-    prompt_builder=build_prompt,
+    prompt_builder: Callable[[str, list[dict]], str] = build_prompt,
+    model: str | None = None,
 ) -> dict[str, str | list[dict[str, str | int]]]:
     """Generate a grounded answer and return it with its retrieved sources.
 
     ``prompt_builder`` lets callers swap in a different prompt variant
     (e.g. ``build_prompt_concise``) without duplicating the generation
     logic, which is what the LLM evaluation script uses to compare them.
+    ``model`` overrides the configured generation model (used by the
+    evaluation, which records which model produced each answer).
     """
     if not chunks:
         raise ValueError("At least one retrieved chunk is required to answer a question")
 
-    client = get_groq_client()
-    response = client.chat.completions.create(
-        model=GENERATION_MODEL,
-        messages=[{"role": "user", "content": prompt_builder(question, chunks)}],
-        temperature=GENERATION_TEMPERATURE,
-        max_tokens=GENERATION_MAX_OUTPUT_TOKENS,
+    settings = get_settings()
+    completion = complete(
+        prompt_builder(question, chunks),
+        model=model or settings.generation_model,
+        temperature=settings.generation_temperature,
+        max_tokens=settings.generation_max_tokens,
     )
+    sources = extract_sources(chunks)
 
-    choice = response.choices[0]
-    text = choice.message.content
+    if completion.finish_reason == "length":
+        # The response was cut off before the model finished. Returning the
+        # cut-off text silently would look like a complete (but wrong) answer.
+        return {"answer": TRUNCATED_MESSAGE, "sources": sources}
 
-    if choice.finish_reason == "length":
-        # Groq's (OpenAI-style) signal that the response was cut off before
-        # the model finished -- same failure mode we hit with Gemini, same
-        # reasoning for not silently returning the cut-off text.
-        return {
-            "answer": TRUNCATED_MESSAGE,
-            "sources": extract_sources(chunks),
-        }
+    if not completion.text:
+        return {"answer": NO_ANSWER_MESSAGE, "sources": sources}
 
-    if not text:
-        return {
-            "answer": NO_ANSWER_MESSAGE,
-            "sources": extract_sources(chunks),
-        }
-
-    return {
-        "answer": text.strip(),
-        "sources": extract_sources(chunks),
-    }
+    return {"answer": completion.text, "sources": sources}

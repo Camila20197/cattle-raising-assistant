@@ -35,7 +35,7 @@ services:
   dashboard:
     build: .
 
-    command: uv run streamlit run src/monitoring/dashboard.py --server.address 0.0.0.0 --server.port 8501
+    command: uv run python -m streamlit run src/monitoring/dashboard.py --server.address 0.0.0.0 --server.port 8501
 
     environment:
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
@@ -46,6 +46,20 @@ services:
 
     ports:
       - "8501:8501"
+
+  ui:
+    build: .
+
+    command: uv run python -m streamlit run src/ui/chat_app.py --server.address 0.0.0.0 --server.port 8502
+
+    environment:
+      - API_URL=http://api:8000
+
+    depends_on:
+      - api
+
+    ports:
+      - "8502:8502"
 
   kestra:
     image: kestra/kestra:latest

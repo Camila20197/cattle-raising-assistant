@@ -1,8 +1,9 @@
 import json
 
-from src.generation.groq_client import get_groq_client
+from src.config import get_settings
+from src.generation.groq_client import LLMError, complete
 
-JUDGE_MODEL = "llama-3.3-70b-versatile"
+VALID_RELEVANCE = {"RELEVANT", "PARTLY_RELEVANT", "NON_RELEVANT"}
 
 
 def build_judge_prompt(question: str, context: str, answer: str) -> str:
@@ -37,14 +38,38 @@ Respond with ONLY a JSON object (no markdown, no extra text) with exactly these 
 """
 
 
-def judge_answer(question: str, context: str, answer: str) -> dict[str, str | bool]:
-    """Score a generated answer for relevance and groundedness using an LLM judge."""
-    client = get_groq_client()
-    response = client.chat.completions.create(
-        model=JUDGE_MODEL,
-        messages=[{"role": "user", "content": build_judge_prompt(question, context, answer)}],
-        temperature=0,
-        response_format={"type": "json_object"},
-    )
+def parse_judgment(raw: str) -> dict[str, str | bool]:
+    """Parse and validate the judge's JSON, failing loudly on a bad shape.
 
-    return json.loads(response.choices[0].message.content)
+    JSON mode guarantees valid JSON, not the expected keys, so a judgment
+    with a missing key or an unknown label is rejected instead of being
+    silently counted in the metrics.
+    """
+    try:
+        judgment = json.loads(raw)
+    except json.JSONDecodeError as error:
+        raise LLMError(f"Judge returned invalid JSON: {raw[:200]!r}") from error
+
+    if judgment.get("relevance") not in VALID_RELEVANCE:
+        raise LLMError(f"Judge returned an unknown relevance label: {judgment!r}")
+    if not isinstance(judgment.get("grounded"), bool):
+        raise LLMError(f"Judge returned a non-boolean 'grounded' value: {judgment!r}")
+
+    return {
+        "relevance": judgment["relevance"],
+        "grounded": judgment["grounded"],
+        "explanation": str(judgment.get("explanation", "")),
+    }
+
+
+def judge_answer(
+    question: str, context: str, answer: str, model: str | None = None
+) -> dict[str, str | bool]:
+    """Score a generated answer for relevance and groundedness using an LLM judge."""
+    completion = complete(
+        build_judge_prompt(question, context, answer),
+        model=model or get_settings().judge_model,
+        temperature=0,
+        json_mode=True,
+    )
+    return parse_judgment(completion.text)

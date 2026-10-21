@@ -1,21 +1,14 @@
-import os
 from datetime import datetime
 
 import pandas as pd
-import psycopg
 import streamlit as st
 from dotenv import load_dotenv
+
+from src.monitoring.db import get_connection
 
 load_dotenv()
 
 st.set_page_config(page_title="Cattle Assistant - Monitoring", layout="wide")
-
-
-def get_connection() -> psycopg.Connection:
-    database_url = os.getenv("DATABASE_URL")
-    if not database_url:
-        raise EnvironmentError("DATABASE_URL is not set")
-    return psycopg.connect(database_url)
 
 
 def _query_df(sql: str) -> pd.DataFrame:
@@ -32,7 +25,8 @@ def _query_df(sql: str) -> pd.DataFrame:
 @st.cache_data(ttl=30)
 def load_conversations() -> pd.DataFrame:
     return _query_df(
-        "SELECT id, created_at, question, answer, retrieval_method, prompt_variant "
+        "SELECT id, created_at, question, answer, retrieval_method, prompt_variant, "
+        "COALESCE(generation_model, 'unknown') AS generation_model "
         "FROM conversations ORDER BY created_at"
     )
 
@@ -95,10 +89,14 @@ st.subheader("Variante de prompt usada")
 st.bar_chart(conversations["prompt_variant"].value_counts(), color=YELLOW_LIGHT)
 
 # --- Chart 5 ---
+st.subheader("Modelo de lenguaje usado")
+st.bar_chart(conversations["generation_model"].value_counts(), color=GREEN)
+
+# --- Chart 6 ---
 st.subheader("Longitud promedio de respuesta por día (caracteres)")
 st.line_chart(conversations.groupby("date")["answer_length"].mean(), color=GREEN_DARK)
 
-# --- Chart 6 ---
+# --- Chart 7 ---
 st.subheader("Preguntas más frecuentes")
 st.bar_chart(conversations["question"].value_counts().head(10), color=YELLOW)
 

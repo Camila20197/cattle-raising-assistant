@@ -9,36 +9,42 @@ Run manually with:
     uv run python -m src.ingestion.run_ingestion
 """
 
+import logging
 from pathlib import Path
 
+from src.config import get_settings
 from src.ingestion.chunker import chunk_pages
-from src.ingestion.pdf_loader import load_pdfs, save_records
+from src.ingestion.pdf_loader import load_pdfs
+from src.jsonl import write_jsonl
 from src.retrieval.vector_search import index_chunks
 
 RAW_PDF_DIR = Path("data/raw")
 PAGES_PATH = Path("data/processed/pages.jsonl")
-CHUNKS_PATH = Path("data/processed/chunks.jsonl")
-INDEXED_CHUNKS_PATH = Path("data/processed/indexed_chunks.jsonl")
+
+logger = logging.getLogger(__name__)
 
 
-def main():
-    print(f"Cargando PDFs desde {RAW_PDF_DIR}...")
+def main() -> None:
+    settings = get_settings()
+
+    logger.info("Loading PDFs from %s...", RAW_PDF_DIR)
     pages = load_pdfs(RAW_PDF_DIR)
-    save_records(pages, PAGES_PATH)
-    print(f"  {len(pages)} páginas extraídas -> {PAGES_PATH}")
+    write_jsonl(pages, PAGES_PATH)
+    logger.info("%s pages extracted -> %s", len(pages), PAGES_PATH)
 
-    print("Dividiendo en chunks...")
+    logger.info("Splitting pages into chunks...")
     chunks = chunk_pages(pages)
-    save_records(chunks, CHUNKS_PATH)
-    print(f"  {len(chunks)} chunks creados -> {CHUNKS_PATH}")
+    write_jsonl(chunks, settings.chunks_path)
+    logger.info("%s chunks created -> %s", len(chunks), settings.chunks_path)
 
-    print("Generando embeddings (llama a la API de Gemini)...")
+    logger.info("Generating embeddings (calls the Gemini API)...")
     indexed_chunks = index_chunks(chunks)
-    save_records(indexed_chunks, INDEXED_CHUNKS_PATH)
-    print(f"  {len(indexed_chunks)} chunks indexados -> {INDEXED_CHUNKS_PATH}")
+    write_jsonl(indexed_chunks, settings.indexed_chunks_path)
+    logger.info("%s chunks indexed -> %s", len(indexed_chunks), settings.indexed_chunks_path)
 
-    print("Ingesta completa.")
+    logger.info("Ingestion complete.")
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     main()

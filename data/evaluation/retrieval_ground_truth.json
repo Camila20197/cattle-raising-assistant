@@ -3,60 +3,326 @@
     "question": "¿Qué reducción de la excreción viral observó el estudio de ivermectina frente al grupo control?",
     "expected_chunk_ids": [
       "INTA_CICVyA_InstitutodeVirologia_Maidana_SS_Efecto_antiviral_de_la_ivermectina.pdf:1:3"
-    ]
+    ],
+    "authoring": "manual"
   },
   {
     "question": "¿Cuáles son las medidas convencionales de control del BoAHV-1 en bovinos?",
     "expected_chunk_ids": [
       "INTA_CICVyA_InstitutodeVirologia_Maidana_SS_Efecto_antiviral_de_la_ivermectina.pdf:2:4"
-    ]
+    ],
+    "authoring": "manual"
   },
   {
     "question": "¿Qué riesgo plantea la falta de reservas forrajeras durante la sequía?",
     "expected_chunk_ids": [
       "INTA_CREntreRíos_EEAConcepcióndelUruguay_GorelikZonis_YG_Impacto_sequía_ganadería_bovina_Gualeguaychu.pdf:1:2"
-    ]
+    ],
+    "authoring": "manual"
   },
   {
     "question": "¿Cuánto dura aproximadamente la fase parasítica de Rhipicephalus microplus sobre el bovino?",
     "expected_chunk_ids": [
       "INTA_CRSantaFe_EEARafaela_Nava_S_Guia_identificacion_especies_garrapatas_Entre_Rios.pdf:6:1"
-    ]
+    ],
+    "authoring": "manual"
   },
   {
     "question": "¿Qué especies de garrapatas pueden encontrarse con mayor frecuencia como larvas y ninfas en bovinos de Entre Ríos?",
     "expected_chunk_ids": [
       "INTA_CRSantaFe_EEARafaela_Nava_S_Guia_identificacion_especies_garrapatas_Entre_Rios.pdf:28:1"
-    ]
+    ],
+    "authoring": "manual"
   },
   {
     "question": "¿Qué enfermedad causa el alfaherpesvirus bovino 1 en el ganado vacuno?",
     "expected_chunk_ids": [
       "INTA_CICVyA_InstitutodeVirologia_Maidana_SS_Efecto_antiviral_de_la_ivermectina.pdf:2:3"
-    ]
+    ],
+    "authoring": "manual"
   },
   {
     "question": "¿Existen tratamientos antivirales veterinarios para inhibir la replicación del BoAHV-1 en bovinos?",
     "expected_chunk_ids": [
       "INTA_CICVyA_InstitutodeVirologia_Maidana_SS_Efecto_antiviral_de_la_ivermectina.pdf:2:4"
-    ]
+    ],
+    "authoring": "manual"
   },
   {
     "question": "¿Qué signos clínicos puede causar la infección por BoAHV-1?",
     "expected_chunk_ids": [
       "INTA_CICVyA_InstitutodeVirologia_Maidana_SS_Efecto_antiviral_de_la_ivermectina.pdf:2:5"
-    ]
+    ],
+    "authoring": "manual"
   },
   {
     "question": "¿Qué problemas puede provocar la infestación por Otobius megnini en bovinos?",
     "expected_chunk_ids": [
       "INTA_CRSantaFe_EEARafaela_Nava_S_Guia_identificacion_especies_garrapatas_Entre_Rios.pdf:5:2"
-    ]
+    ],
+    "authoring": "manual"
   },
   {
     "question": "¿Qué especies de garrapatas se incluyen en la guía para bovinos de Entre Ríos?",
     "expected_chunk_ids": [
       "INTA_CRSantaFe_EEARafaela_Nava_S_Guia_identificacion_especies_garrapatas_Entre_Rios.pdf:7:1"
-    ]
+    ],
+    "authoring": "manual"
+  },
+  {
+    "question": "¿Cuánto aumentaron los movimientos de hacienda en febrero de 2026 respecto de febrero de 2025 en Gualeguaychú?",
+    "expected_chunk_ids": [
+      "INTA_CREntreRíos_EEAConcepcióndelUruguay_GorelikZonis_YG_Impacto_sequía_ganadería_bovina_Gualeguaychu.pdf:1:2",
+      "INTA_CREntreRíos_EEAConcepcióndelUruguay_GorelikZonis_YG_Impacto_sequía_ganadería_bovina_Gualeguaychu.pdf:3:5",
+      "INTA_CREntreRíos_EEAConcepcióndelUruguay_GorelikZonis_YG_Impacto_sequía_ganadería_bovina_Gualeguaychu.pdf:16:3",
+      "INTA_CREntreRíos_EEAConcepcióndelUruguay_GorelikZonis_YG_Impacto_sequía_ganadería_bovina_Gualeguaychu.pdf:18:3"
+    ],
+    "authoring": "ai_assisted"
+  },
+  {
+    "question": "¿Qué porcentaje de los productores relevados tuvo que aumentar la suplementación durante la sequía?",
+    "expected_chunk_ids": [
+      "INTA_CREntreRíos_EEAConcepcióndelUruguay_GorelikZonis_YG_Impacto_sequía_ganadería_bovina_Gualeguaychu.pdf:1:2",
+      "INTA_CREntreRíos_EEAConcepcióndelUruguay_GorelikZonis_YG_Impacto_sequía_ganadería_bovina_Gualeguaychu.pdf:5:5",
+      "INTA_CREntreRíos_EEAConcepcióndelUruguay_GorelikZonis_YG_Impacto_sequía_ganadería_bovina_Gualeguaychu.pdf:6:5"
+    ],
+    "authoring": "ai_assisted"
+  },
+  {
+    "question": "¿Cuántos productores ganaderos fueron relevados para el informe de sequía de Gualeguaychú?",
+    "expected_chunk_ids": [
+      "INTA_CREntreRíos_EEAConcepcióndelUruguay_GorelikZonis_YG_Impacto_sequía_ganadería_bovina_Gualeguaychu.pdf:1:4",
+      "INTA_CREntreRíos_EEAConcepcióndelUruguay_GorelikZonis_YG_Impacto_sequía_ganadería_bovina_Gualeguaychu.pdf:4:3"
+    ],
+    "authoring": "ai_assisted"
+  },
+  {
+    "question": "¿Cómo fue la productividad de los pastizales en octubre de 2025 respecto del promedio histórico?",
+    "expected_chunk_ids": [
+      "INTA_CREntreRíos_EEAConcepcióndelUruguay_GorelikZonis_YG_Impacto_sequía_ganadería_bovina_Gualeguaychu.pdf:3:2",
+      "INTA_CREntreRíos_EEAConcepcióndelUruguay_GorelikZonis_YG_Impacto_sequía_ganadería_bovina_Gualeguaychu.pdf:11:2"
+    ],
+    "authoring": "ai_assisted"
+  },
+  {
+    "question": "¿Cuántas cabezas bovinas había en el departamento Gualeguaychú en 2025?",
+    "expected_chunk_ids": [
+      "INTA_CREntreRíos_EEAConcepcióndelUruguay_GorelikZonis_YG_Impacto_sequía_ganadería_bovina_Gualeguaychu.pdf:2:5",
+      "INTA_CREntreRíos_EEAConcepcióndelUruguay_GorelikZonis_YG_Impacto_sequía_ganadería_bovina_Gualeguaychu.pdf:3:4",
+      "INTA_CREntreRíos_EEAConcepcióndelUruguay_GorelikZonis_YG_Impacto_sequía_ganadería_bovina_Gualeguaychu.pdf:7:1",
+      "INTA_CREntreRíos_EEAConcepcióndelUruguay_GorelikZonis_YG_Impacto_sequía_ganadería_bovina_Gualeguaychu.pdf:15:3",
+      "INTA_CREntreRíos_EEAConcepcióndelUruguay_GorelikZonis_YG_Impacto_sequía_ganadería_bovina_Gualeguaychu.pdf:18:3"
+    ],
+    "authoring": "ai_assisted"
+  },
+  {
+    "question": "¿Qué distritos de Gualeguaychú tuvieron un impacto crítico por la sequía?",
+    "expected_chunk_ids": [
+      "INTA_CREntreRíos_EEAConcepcióndelUruguay_GorelikZonis_YG_Impacto_sequía_ganadería_bovina_Gualeguaychu.pdf:5:1",
+      "INTA_CREntreRíos_EEAConcepcióndelUruguay_GorelikZonis_YG_Impacto_sequía_ganadería_bovina_Gualeguaychu.pdf:6:3"
+    ],
+    "authoring": "ai_assisted"
+  },
+  {
+    "question": "¿Por qué los productores de Pehuajó al Norte reportaron un daño severo aunque el análisis satelital mostraba un déficit menor?",
+    "expected_chunk_ids": [
+      "INTA_CREntreRíos_EEAConcepcióndelUruguay_GorelikZonis_YG_Impacto_sequía_ganadería_bovina_Gualeguaychu.pdf:5:4"
+    ],
+    "authoring": "ai_assisted"
+  },
+  {
+    "question": "¿Cuánto aumentaron las ventas de alimento para bovinos en las plantas elaboradoras durante la sequía?",
+    "expected_chunk_ids": [
+      "INTA_CREntreRíos_EEAConcepcióndelUruguay_GorelikZonis_YG_Impacto_sequía_ganadería_bovina_Gualeguaychu.pdf:4:2",
+      "INTA_CREntreRíos_EEAConcepcióndelUruguay_GorelikZonis_YG_Impacto_sequía_ganadería_bovina_Gualeguaychu.pdf:6:5"
+    ],
+    "authoring": "ai_assisted"
+  },
+  {
+    "question": "¿Qué porcentaje de los establecimientos agotó sus reservas de agua superficiales y tuvo que usar motobombas?",
+    "expected_chunk_ids": [
+      "INTA_CREntreRíos_EEAConcepcióndelUruguay_GorelikZonis_YG_Impacto_sequía_ganadería_bovina_Gualeguaychu.pdf:5:6",
+      "INTA_CREntreRíos_EEAConcepcióndelUruguay_GorelikZonis_YG_Impacto_sequía_ganadería_bovina_Gualeguaychu.pdf:6:4"
+    ],
+    "authoring": "ai_assisted"
+  },
+  {
+    "question": "¿Qué tasas de preñez se estiman en los establecimientos más afectados por la sequía?",
+    "expected_chunk_ids": [
+      "INTA_CREntreRíos_EEAConcepcióndelUruguay_GorelikZonis_YG_Impacto_sequía_ganadería_bovina_Gualeguaychu.pdf:6:6"
+    ],
+    "authoring": "ai_assisted"
+  },
+  {
+    "question": "¿Qué datos y herramientas satelitales se usaron para estimar la productividad de los pastizales?",
+    "expected_chunk_ids": [
+      "INTA_CREntreRíos_EEAConcepcióndelUruguay_GorelikZonis_YG_Impacto_sequía_ganadería_bovina_Gualeguaychu.pdf:3:1",
+      "INTA_CREntreRíos_EEAConcepcióndelUruguay_GorelikZonis_YG_Impacto_sequía_ganadería_bovina_Gualeguaychu.pdf:8:5"
+    ],
+    "authoring": "ai_assisted"
+  },
+  {
+    "question": "¿Hasta cuántas desviaciones estándar llegó la anomalía de humedad del suelo en el sur del departamento?",
+    "expected_chunk_ids": [
+      "INTA_CREntreRíos_EEAConcepcióndelUruguay_GorelikZonis_YG_Impacto_sequía_ganadería_bovina_Gualeguaychu.pdf:10:2",
+      "INTA_CREntreRíos_EEAConcepcióndelUruguay_GorelikZonis_YG_Impacto_sequía_ganadería_bovina_Gualeguaychu.pdf:14:3"
+    ],
+    "authoring": "ai_assisted"
+  },
+  {
+    "question": "¿Qué proporción de vaquillonas se envió a frigorífico y qué indica ese dato?",
+    "expected_chunk_ids": [
+      "INTA_CREntreRíos_EEAConcepcióndelUruguay_GorelikZonis_YG_Impacto_sequía_ganadería_bovina_Gualeguaychu.pdf:17:4",
+      "INTA_CREntreRíos_EEAConcepcióndelUruguay_GorelikZonis_YG_Impacto_sequía_ganadería_bovina_Gualeguaychu.pdf:18:1",
+      "INTA_CREntreRíos_EEAConcepcióndelUruguay_GorelikZonis_YG_Impacto_sequía_ganadería_bovina_Gualeguaychu.pdf:18:4"
+    ],
+    "authoring": "ai_assisted"
+  },
+  {
+    "question": "¿Qué superficie ganadera tiene el departamento Gualeguaychú?",
+    "expected_chunk_ids": [
+      "INTA_CREntreRíos_EEAConcepcióndelUruguay_GorelikZonis_YG_Impacto_sequía_ganadería_bovina_Gualeguaychu.pdf:2:3",
+      "INTA_CREntreRíos_EEAConcepcióndelUruguay_GorelikZonis_YG_Impacto_sequía_ganadería_bovina_Gualeguaychu.pdf:2:4"
+    ],
+    "authoring": "ai_assisted"
+  },
+  {
+    "question": "¿Qué medidas tomaron los productores para mitigar el impacto de la sequía?",
+    "expected_chunk_ids": [
+      "INTA_CREntreRíos_EEAConcepcióndelUruguay_GorelikZonis_YG_Impacto_sequía_ganadería_bovina_Gualeguaychu.pdf:5:1",
+      "INTA_CREntreRíos_EEAConcepcióndelUruguay_GorelikZonis_YG_Impacto_sequía_ganadería_bovina_Gualeguaychu.pdf:5:2",
+      "INTA_CREntreRíos_EEAConcepcióndelUruguay_GorelikZonis_YG_Impacto_sequía_ganadería_bovina_Gualeguaychu.pdf:6:5"
+    ],
+    "authoring": "ai_assisted"
+  },
+  {
+    "question": "¿En cuántas garrapatas se detectó el genoma del alfaherpesvirus bovino tipo 1.1?",
+    "expected_chunk_ids": [
+      "INTA_CICVyA_InstitutodeVirologia_Romera_SA_Primer_registro_de_alfaherpesvirus_bovino.pdf:2:1",
+      "INTA_CICVyA_InstitutodeVirologia_Romera_SA_Primer_registro_de_alfaherpesvirus_bovino.pdf:2:3",
+      "INTA_CICVyA_InstitutodeVirologia_Romera_SA_Primer_registro_de_alfaherpesvirus_bovino.pdf:4:3"
+    ],
+    "authoring": "ai_assisted"
+  },
+  {
+    "question": "¿Dónde y cuándo se colectaron las garrapatas Rhipicephalus microplus analizadas para detectar alfaherpesvirus?",
+    "expected_chunk_ids": [
+      "INTA_CICVyA_InstitutodeVirologia_Romera_SA_Primer_registro_de_alfaherpesvirus_bovino.pdf:2:1",
+      "INTA_CICVyA_InstitutodeVirologia_Romera_SA_Primer_registro_de_alfaherpesvirus_bovino.pdf:2:3",
+      "INTA_CICVyA_InstitutodeVirologia_Romera_SA_Primer_registro_de_alfaherpesvirus_bovino.pdf:3:4"
+    ],
+    "authoring": "ai_assisted"
+  },
+  {
+    "question": "¿La detección de BoAHV-1.1 en garrapatas demuestra que Rhipicephalus microplus es vector del virus?",
+    "expected_chunk_ids": [
+      "INTA_CICVyA_InstitutodeVirologia_Romera_SA_Primer_registro_de_alfaherpesvirus_bovino.pdf:2:2",
+      "INTA_CICVyA_InstitutodeVirologia_Romera_SA_Primer_registro_de_alfaherpesvirus_bovino.pdf:2:4",
+      "INTA_CICVyA_InstitutodeVirologia_Romera_SA_Primer_registro_de_alfaherpesvirus_bovino.pdf:6:4"
+    ],
+    "authoring": "ai_assisted"
+  },
+  {
+    "question": "¿En qué provincias argentinas se encuentra la garrapata Rhipicephalus microplus?",
+    "expected_chunk_ids": [
+      "INTA_CICVyA_InstitutodeVirologia_Romera_SA_Primer_registro_de_alfaherpesvirus_bovino.pdf:3:3"
+    ],
+    "authoring": "ai_assisted"
+  },
+  {
+    "question": "¿Cuántas especies de virus transmiten las garrapatas?",
+    "expected_chunk_ids": [
+      "INTA_CICVyA_InstitutodeVirologia_Romera_SA_Primer_registro_de_alfaherpesvirus_bovino.pdf:6:1"
+    ],
+    "authoring": "ai_assisted"
+  },
+  {
+    "question": "¿Qué técnica se utilizó para detectar el genoma viral en las garrapatas?",
+    "expected_chunk_ids": [
+      "INTA_CICVyA_InstitutodeVirologia_Romera_SA_Primer_registro_de_alfaherpesvirus_bovino.pdf:2:1",
+      "INTA_CICVyA_InstitutodeVirologia_Romera_SA_Primer_registro_de_alfaherpesvirus_bovino.pdf:3:4"
+    ],
+    "authoring": "ai_assisted"
+  },
+  {
+    "question": "¿Por qué los bovinos infectados con alfaherpesvirus se convierten en reservorios del virus?",
+    "expected_chunk_ids": [
+      "INTA_CICVyA_InstitutodeVirologia_Romera_SA_Primer_registro_de_alfaherpesvirus_bovino.pdf:3:1"
+    ],
+    "authoring": "ai_assisted"
+  },
+  {
+    "question": "¿Cómo explican los autores la presencia de ADN viral de BoAHV en las garrapatas?",
+    "expected_chunk_ids": [
+      "INTA_CICVyA_InstitutodeVirologia_Romera_SA_Primer_registro_de_alfaherpesvirus_bovino.pdf:6:3"
+    ],
+    "authoring": "ai_assisted"
+  },
+  {
+    "question": "¿Cuántas especies de garrapatas existen en Argentina y en qué familias se dividen?",
+    "expected_chunk_ids": [
+      "INTA_CRSantaFe_EEARafaela_Nava_S_Guia_identificacion_especies_garrapatas_Entre_Rios.pdf:4:2"
+    ],
+    "authoring": "ai_assisted"
+  },
+  {
+    "question": "¿Qué es la tristeza bovina?",
+    "expected_chunk_ids": [
+      "INTA_CRSantaFe_EEARafaela_Nava_S_Guia_identificacion_especies_garrapatas_Entre_Rios.pdf:4:3"
+    ],
+    "authoring": "ai_assisted"
+  },
+  {
+    "question": "¿Qué especies de Amblyomma asociadas a los bovinos transmiten rickettsias patógenas para los humanos?",
+    "expected_chunk_ids": [
+      "INTA_CRSantaFe_EEARafaela_Nava_S_Guia_identificacion_especies_garrapatas_Entre_Rios.pdf:5:2"
+    ],
+    "authoring": "ai_assisted"
+  },
+  {
+    "question": "¿Cuáles son las etapas del ciclo de vida de las garrapatas duras?",
+    "expected_chunk_ids": [
+      "INTA_CRSantaFe_EEARafaela_Nava_S_Guia_identificacion_especies_garrapatas_Entre_Rios.pdf:5:3"
+    ],
+    "authoring": "ai_assisted"
+  },
+  {
+    "question": "¿Cómo se diferencia una larva de una ninfa de garrapata?",
+    "expected_chunk_ids": [
+      "INTA_CRSantaFe_EEARafaela_Nava_S_Guia_identificacion_especies_garrapatas_Entre_Rios.pdf:9:1",
+      "INTA_CRSantaFe_EEARafaela_Nava_S_Guia_identificacion_especies_garrapatas_Entre_Rios.pdf:12:1",
+      "INTA_CRSantaFe_EEARafaela_Nava_S_Guia_identificacion_especies_garrapatas_Entre_Rios.pdf:13:1"
+    ],
+    "authoring": "ai_assisted"
+  },
+  {
+    "question": "¿Qué características morfológicas permiten reconocer a Rhipicephalus microplus?",
+    "expected_chunk_ids": [
+      "INTA_CRSantaFe_EEARafaela_Nava_S_Guia_identificacion_especies_garrapatas_Entre_Rios.pdf:11:1",
+      "INTA_CRSantaFe_EEARafaela_Nava_S_Guia_identificacion_especies_garrapatas_Entre_Rios.pdf:15:2"
+    ],
+    "authoring": "ai_assisted"
+  },
+  {
+    "question": "¿Cuántos animales tenía cada grupo experimental en el estudio de ivermectina?",
+    "expected_chunk_ids": [
+      "INTA_CICVyA_InstitutodeVirologia_Maidana_SS_Efecto_antiviral_de_la_ivermectina.pdf:3:2"
+    ],
+    "authoring": "ai_assisted"
+  },
+  {
+    "question": "¿Cómo actúa la ivermectina para bloquear la replicación del alfaherpesvirus bovino?",
+    "expected_chunk_ids": [
+      "INTA_CICVyA_InstitutodeVirologia_Maidana_SS_Efecto_antiviral_de_la_ivermectina.pdf:2:4",
+      "INTA_CICVyA_InstitutodeVirologia_Maidana_SS_Efecto_antiviral_de_la_ivermectina.pdf:5:4"
+    ],
+    "authoring": "ai_assisted"
+  },
+  {
+    "question": "¿Qué vacuna comercial se usó como comparación en el ensayo de ivermectina?",
+    "expected_chunk_ids": [
+      "INTA_CICVyA_InstitutodeVirologia_Maidana_SS_Efecto_antiviral_de_la_ivermectina.pdf:1:3"
+    ],
+    "authoring": "ai_assisted"
   }
 ]

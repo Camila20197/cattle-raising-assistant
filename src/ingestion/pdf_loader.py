@@ -1,6 +1,5 @@
 """Utilities for extracting text and metadata from PDF documents."""
 
-import json
 import logging
 from pathlib import Path
 
@@ -42,22 +41,3 @@ def load_pdfs(data_dir: Path) -> list[dict[str, str | int]]:
     logger.info("Loaded %s text pages and skipped %s empty pages.", len(pages), skipped_pages)
 
     return pages
-
-
-def save_records(records: list[dict[str, str | int]], output_path: Path) -> None:
-    """Save records as JSON Lines, writing one JSON object per line.
-
-    JSON Lines is convenient for data pipelines because each line is an
-    independent record and can be processed without loading the whole file.
-    """
-    output_path.parent.mkdir(parents=True, exist_ok=True)
-
-    with output_path.open("w", encoding="utf-8") as file:
-        for record in records:
-            file.write(json.dumps(record, ensure_ascii=False) + "\n")
-
-
-def load_records(input_path: Path) -> list[dict[str, str | int]]:
-    """Load records stored in a JSON Lines file."""
-    with input_path.open(encoding="utf-8") as file:
-        return [json.loads(line) for line in file if line.strip()]

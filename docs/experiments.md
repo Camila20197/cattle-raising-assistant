@@ -190,10 +190,39 @@ The two prompts tied exactly. **Prompt A was kept for production**: with equal m
 
 **Known limitation of this evaluation:** the judge scores relevance and groundedness, but not answer *completeness* — the truncation bug in Experiment 4 was caught by manual testing, not by this automated evaluation, since a truncated-but-otherwise-grounded partial answer would not necessarily be flagged by the current judge prompt.
 
+## Experiment 6: Post-review hardening (v0.2.0)
+
+Changes made after the project review, each tied to a concrete finding:
+
+**1. Model deprecation broke reproducibility.** Groq retired `llama-3.3-70b-versatile` on 2026-08-16 ([Groq deprecations](https://console.groq.com/docs/deprecations)), so `POST /ask` returned an opaque 500. Fixes:
+
+* The model name moved out of the code into configuration (`GROQ_GENERATION_MODEL`, `GROQ_JUDGE_MODEL`, read by `src/config.py`). The default is now `openai/gpt-oss-120b`, Groq's recommended replacement.
+* All Groq calls go through one adapter (`src/generation/groq_client.complete`). It translates a retired/unknown model into `ModelUnavailableError`, which the API returns as **503 with instructions** (which variable to change, where to check deprecations) instead of a 500.
+* `/health` and every `/ask` response report the model in use, and the model is logged in the `conversations` table and shown on the monitoring dashboard.
+* `GENERATION_MAX_TOKENS` defaults to 4096 because gpt-oss is a reasoning model and spends part of the budget reasoning (same truncation risk as Experiment 4).
+
+**2. The LLM-evaluation cache replayed stale judgments.** Results were keyed only by question text, so after swapping the model the script silently reused judgments produced by the retired model. Results are now keyed by `prompt | generation model | judge model` (results file format v2). The old judgments were migrated under `llama-3.3-70b-versatile`, kept as history, and are never reused for another model. A regression test (`tests/test_llm_eval_cache.py`) covers this exact scenario.
+
+**3. The evaluation set was too small for statistical confidence.** The ground truth grew from 10 to **42 questions**, now covering all four documents (the alfaherpesvirus-in-ticks paper had no questions before, and the drought report had only one). The 32 new questions are marked `"authoring": "ai_assisted"`: they were drafted with AI assistance and automatically checked so that every expected chunk contains the key fact of the answer. Every metric is now reported with a 95% confidence interval (Wilson for proportions, bootstrap for MRR).
+
+BM25 on the expanded set (`uv run python -m src.evaluation.evaluate_retrieval --methods keyword`):
+
+| Ground truth | Hit Rate@5 | 95% CI | MRR | 95% CI |
+| --- | ---: | --- | ---: | --- |
+| Original 10 questions | 100% | [72%, 100%] | 0.817 | — |
+| Expanded 42 questions | 90.5% | [78%, 96%] | 0.724 | [0.61, 0.83] |
+
+The larger set gives a lower but more trustworthy estimate: the original 100% was compatible with a true hit rate as low as 72%. The four misses (e.g. *"¿Qué vacuna comercial se usó como comparación en el ensayo de ivermectina?"*) point at real weaknesses (questions whose key term is a brand name or number that BM25 does not weight well). Vector and hybrid search, and the LLM evaluation with the new model, need to be re-run with API keys to complete the comparison on 42 questions.
+
+**4. Logs and evaluation output were in Spanish.** All logs, script output and evaluation reports are now in English (via the `logging` module). The assistant's answers and the chat UI stay in Spanish on purpose, because the end users are Argentine producers.
+
+**5. A test found a chunking bug.** The new unit tests showed that the overlap between consecutive chunks can start in the middle of a word (`"tres"` → `"res"`); about 80% of non-first chunks start this way. The fix changes chunk boundaries and therefore the chunk IDs used by the ground truth, so it is tracked as an `xfail` test and in the roadmap, to be shipped together with a re-ingestion and a regenerated ground truth.
+
 ## Interface and Deployment
 
 * **Interface:** a FastAPI application (`main.py`) exposes `POST /ask` (question in, grounded answer + sources out) and `GET /health` (a liveness check that makes no external API calls). The root path redirects to the auto-generated `/docs` Swagger UI.
-* **Containerization:** the API and Kestra both run via `docker-compose.yml`. The API image is built from a `Dockerfile` using `uv sync --frozen` for reproducible dependency installation. A shared named Docker volume (`app_data`) lets the Kestra-run ingestion flow and the API read and write the same processed data files.
+* **Chat UI:** a Streamlit chat (`src/ui/chat_app.py`, port 8502) consumes the API over HTTP, designed with Nielsen's usability heuristics (see `docs/engineering-improvements.md`).
+* **Containerization:** the API, Postgres, the dashboard, the chat UI and Kestra run via `docker-compose.yml`. The API image is built from a `Dockerfile` using `uv sync --frozen` for reproducible dependency installation. A shared named Docker volume (`app_data`) lets the Kestra-run ingestion flow and the API read and write the same processed data files.
 * **Reproducibility:** both API keys (`GEMINI_API_KEY` for embeddings, `GROQ_API_KEY` for generation/judging) are supplied via a local `.env` file, never baked into the Docker image.
 
 ## References

@@ -1,27 +1,25 @@
-# --- Imagen base ---
-
-# Use a slim version of Python 3.14 as the base image to keep the image size small.   
+# --- Base image ---
+# Slim Python 3.14 image to keep the image small.
 FROM python:3.14-slim
 
+# Show logs immediately and let `src.*` imports work for every entry point
+# (API, monitoring dashboard and chat UI).
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONPATH=/app
 
-# --- Set environment variables ---
+# --- Package manager ---
 RUN pip install --no-cache-dir uv
 
-# -- Set the working directory inside the container ---
 WORKDIR /app
 
-# --- Copy dependency files ---
+# --- Dependencies first (cached layer while only the code changes) ---
 COPY pyproject.toml uv.lock ./
-
-# --- Install dependencies ---
 RUN uv sync --frozen --no-dev
 
-# --- Copy the rest of the application code ---
+# --- Application code ---
 COPY . .
 
-# --- Port that exposes the app ---
 EXPOSE 8000
 
-# --- Command to run the app ---
-#CMD ["uv", "run", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Shell form so ${PORT} can be overridden (e.g. by Cloud Run).
 CMD uv run uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}
