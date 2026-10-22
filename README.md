@@ -14,6 +14,7 @@ An AI-powered RAG (Retrieval-Augmented Generation) assistant that helps cattle p
 - [💬 Sample Questions](#-sample-questions)
 - [🖇️ Running the Project](#️-running-the-project)
 - [🛠️ Reproducibility](#️-reproducibility)
+- [☁️ Cloud Deployment](#️-cloud-deployment)
 - [🔁 When Groq Deprecates a Model](#-when-groq-deprecates-a-model)
 - [🧪 Tests](#-tests)
 - [🧱 Engineering Principles](#-engineering-principles)
@@ -189,7 +190,7 @@ This starts all five services:
 |---|---|---|
 | `ui` | http://localhost:8502 | **Chat interface** — start here |
 | `api` | http://localhost:8000 | FastAPI — redirects to `/docs` |
-| `postgres` | localhost:5432 | Conversation + feedback storage |
+| `postgres` | localhost:5433 | Conversation + feedback storage |
 | `dashboard` | http://localhost:8501 | Streamlit monitoring dashboard |
 | `kestra` | http://localhost:8080 | Ingestion pipeline orchestration UI |
 
@@ -243,6 +244,8 @@ cp .env.example .env
 | `GROQ_JUDGE_MODEL` | no | same as generation | Model that scores answers in the evaluation |
 | `GENERATION_MAX_TOKENS` | no | `4096` | Answer budget (reasoning models use part of it to think) |
 | `RETRIEVAL_TOP_K` | no | `5` | Chunks sent to the model |
+| `MAX_QUESTIONS_PER_MINUTE` / `MAX_QUESTIONS_PER_DAY` | no | `20` / `300` | Global cap on questions that reach the LLM; above it `/ask` returns 429 (`0` = no limit) |
+| `MAX_QUESTIONS_PER_SESSION` | no | `15` | Soft per-visitor limit in the chat UI |
 | `POSTGRES_USER` / `POSTGRES_PASSWORD` / `POSTGRES_DB` | for Docker | — | Monitoring database |
 
 ### Running the evaluations
@@ -267,6 +270,12 @@ All logs and evaluation output are in English. The assistant's answers and the c
 ### Running the ingestion pipeline
 
 The pipeline (`src/ingestion/run_ingestion.py`) is orchestrated by a Kestra flow (`cattle_health_ingestion`). With the stack running (`docker compose up`), open the Kestra UI at `http://localhost:8080`, open the flow, and click **Execute** — or wait for its weekly schedule.
+
+## ☁️ Cloud Deployment
+
+The API and the chat UI can be deployed to **Google Cloud Run** from the same image (`APP_MODE=api` or `APP_MODE=ui`, see `start.sh`). The image is built remotely with Cloud Build (`gcloud run deploy --source .`), and the Groq key is read from Secret Manager. Monitoring is optional in the cloud: without `DATABASE_URL` the assistant keeps working and simply does not log conversations. Because the demo is public, the API also enforces a global question quota (per minute and per day) so a bot cannot run up costs.
+
+Step-by-step guide: [`docs/deploy-cloud-run.md`](docs/deploy-cloud-run.md).
 
 ## 🔁 When Groq Deprecates a Model
 
@@ -303,7 +312,7 @@ Ideas for future improvement, beyond what's built:
 - **Improve ingestion to pull updates automatically from INTA's website**: today, ingestion re-processes whatever PDFs are already in `data/raw/`. A more complete version would have the Kestra flow check INTA's publications page for new reports and download them automatically, so the knowledge base stays current without anyone manually adding files.
 - **Best practices**: evaluate document re-ranking and query rewriting (hybrid search is already evaluated — see [Retrieval Evaluation](#-retrieval-evaluation)).
 - **Cloud deployment**: deploy to Google Cloud Platform, provisioned with Terraform, with dbt for any warehouse-side transformations. This would also unblock a live BigQuery + Looker Studio connection for Monitoring, instead of the local Postgres + Streamlit setup used today.
-- **API deployment to Cloud Run**: a deployment of the API to Google Cloud Run was attempted but did not succeed — the build completed successfully and the same image runs correctly via Docker Compose, but the revision failed with a generic "Container import failed" error at the Cloud Run platform level, with no application logs produced (the container never reached the point of starting Python). Getting this working is expected to be revisited in the future, with more time to investigate the platform-level cause.
+- **API deployment to Cloud Run**: a first attempt failed with a generic "Container import failed" error. v0.2.0 adds a Cloud Run-ready setup (single image with `APP_MODE`, `PORT` handling, remote builds with Cloud Build, optional monitoring) — see [Cloud Deployment](#️-cloud-deployment).
 
 ## 🪐 About the Author
 

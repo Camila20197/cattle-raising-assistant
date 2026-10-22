@@ -26,6 +26,8 @@ class Settings:
     generation_temperature: float
     generation_max_tokens: int
     top_k: int
+    max_questions_per_minute: int
+    max_questions_per_day: int
     chunks_path: Path
     indexed_chunks_path: Path
     ground_truth_path: Path
@@ -69,6 +71,11 @@ def get_settings() -> Settings:
     if top_k <= 0:
         raise ValueError("RETRIEVAL_TOP_K must be greater than zero")
 
+    max_per_minute = _get_int("MAX_QUESTIONS_PER_MINUTE", 20)
+    max_per_day = _get_int("MAX_QUESTIONS_PER_DAY", 300)
+    if max_per_minute < 0 or max_per_day < 0:
+        raise ValueError("MAX_QUESTIONS_PER_MINUTE and MAX_QUESTIONS_PER_DAY must be >= 0 (0 = no limit)")
+
     return Settings(
         generation_model=generation_model,
         judge_model=judge_model,
@@ -77,6 +84,9 @@ def get_settings() -> Settings:
         # internal reasoning, so it is kept generous to avoid truncated answers.
         generation_max_tokens=_get_int("GENERATION_MAX_TOKENS", 4_096),
         top_k=top_k,
+        # Cost safeguard for the public demo: questions that may reach the LLM.
+        max_questions_per_minute=max_per_minute,
+        max_questions_per_day=max_per_day,
         chunks_path=Path(os.getenv("CHUNKS_PATH", "data/processed/chunks.jsonl")),
         indexed_chunks_path=Path(
             os.getenv("INDEXED_CHUNKS_PATH", "data/processed/indexed_chunks.jsonl")

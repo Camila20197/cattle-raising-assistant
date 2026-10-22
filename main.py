@@ -6,11 +6,12 @@ from fastapi import FastAPI, HTTPException, Request
 from fastapi.responses import JSONResponse, RedirectResponse
 from pydantic import BaseModel, Field
 
+from src.api.quota import QuestionQuota, QuotaExceededError
 from src.config import get_settings
 from src.generation.groq_client import LLMError, ModelUnavailableError
 from src.generation.rag import answer_question
 from src.jsonl import read_jsonl
-from src.monitoring.db import init_db, log_conversation, log_feedback
+from src.monitoring.db import init_db, log_conversation, log_feedback, monitoring_enabled
 from src.retrieval.keyword_search import build_bm25_index, search_chunks
 
 NO_DOCUMENTS_MESSAGE = "No encontré información relacionada en los documentos disponibles."
@@ -31,6 +32,9 @@ async def lifespan(app: FastAPI):
     chunks = read_jsonl(settings.chunks_path)
     app_state["chunks"] = chunks
     app_state["bm25"] = build_bm25_index(chunks)
+    app_state["quota"] = QuestionQuota(
+        per_minute=settings.max_questions_per_minute, per_day=settings.max_questions_per_day
+    )
     init_db()
     logger.info(
         "Loaded %s chunks; generation model: %s", len(chunks), settings.generation_model
@@ -62,7 +66,9 @@ class Source(BaseModel):
 
 
 class AskResponse(BaseModel):
-    conversation_id: int
+    conversation_id: int | None = Field(
+        description="Id to send feedback about this answer; null when monitoring is disabled."
+    )
     answer: str
     sources: list[Source]
     model: str = Field(description="LLM that generated the answer.")
@@ -81,6 +87,17 @@ def model_unavailable_handler(request: Request, error: ModelUnavailableError) ->
     opaque 500."""
     logger.error("%s", error)
     return JSONResponse(status_code=503, content={"detail": str(error)})
+
+
+@app.exception_handler(QuotaExceededError)
+def quota_exceeded_handler(request: Request, error: QuotaExceededError) -> JSONResponse:
+    """Cost safeguard: too many questions overall. Answer 429 without calling the LLM."""
+    logger.warning("%s", error)
+    return JSONResponse(
+        status_code=429,
+        content={"detail": str(error)},
+        headers={"Retry-After": str(error.retry_after_seconds)},
+    )
 
 
 @app.exception_handler(LLMError)
@@ -106,7 +123,11 @@ def health() -> dict[str, str]:
     and free, since it can be polled frequently by an orchestrator or load
     balancer once this is deployed. It reports the configured model so a
     stale configuration is easy to spot."""
-    return {"status": "ok", "generation_model": get_settings().generation_model}
+    return {
+        "status": "ok",
+        "generation_model": get_settings().generation_model,
+        "monitoring": "enabled" if monitoring_enabled() else "disabled",
+    }
 
 
 @app.post("/ask", response_model=AskResponse)
@@ -132,6 +153,8 @@ def ask(request: AskRequest) -> AskResponse:
             model="none",
         )
 
+    # Only questions that will actually call the LLM count against the quota.
+    app_state["quota"].acquire()
     result = answer_question(question, retrieved, model=settings.generation_model)
     conversation_id = log_conversation(
         question,
@@ -152,5 +175,7 @@ def ask(request: AskRequest) -> AskResponse:
 @app.post("/feedback")
 def feedback(request: FeedbackRequest) -> dict[str, str]:
     """Record a thumbs up/down (and optional comment) for a previous /ask response."""
+    if not monitoring_enabled():
+        raise HTTPException(status_code=503, detail="Monitoring is disabled: DATABASE_URL is not set.")
     log_feedback(request.conversation_id, request.rating, request.comment)
     return {"status": "ok"}

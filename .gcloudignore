@@ -1,0 +1,13 @@
+# Files NOT uploaded to Google Cloud Build when deploying with `--source .`
+# Secrets: never upload them; on Cloud Run they come from Secret Manager.
+.env
+# Local environments and caches
+.venv/
+__pycache__/
+.pytest_cache/
+.git/
+.claude/
+# Not needed by the running app (the image only needs data/processed)
+data/raw/
+tests/
+notebooks/

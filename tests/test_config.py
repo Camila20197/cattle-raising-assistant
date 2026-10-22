@@ -9,6 +9,8 @@ def test_defaults_use_a_supported_model():
     assert settings.generation_model != "llama-3.3-70b-versatile"  # retired 2026-08-16
     assert settings.judge_model == settings.generation_model
     assert settings.top_k == 5
+    assert settings.max_questions_per_minute == 20
+    assert settings.max_questions_per_day == 300
 
 
 def test_model_can_be_changed_from_the_environment(monkeypatch):
@@ -34,4 +36,12 @@ def test_top_k_must_be_positive(monkeypatch, value):
 def test_invalid_number_gives_a_clear_error(monkeypatch):
     monkeypatch.setenv("GENERATION_MAX_TOKENS", "a lot")
     with pytest.raises(ValueError, match="GENERATION_MAX_TOKENS must be an integer"):
+        get_settings()
+
+
+def test_question_limits_can_be_disabled_but_not_negative(monkeypatch):
+    monkeypatch.setenv("MAX_QUESTIONS_PER_DAY", "0")
+    assert get_settings().max_questions_per_day == 0
+    monkeypatch.setenv("MAX_QUESTIONS_PER_MINUTE", "-1")
+    with pytest.raises(ValueError, match="MAX_QUESTIONS_PER_MINUTE"):
         get_settings()

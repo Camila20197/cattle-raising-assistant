@@ -16,6 +16,7 @@ def client(monkeypatch, tmp_path, sample_chunks):
     )
     monkeypatch.setenv("CHUNKS_PATH", str(chunks_path))
     monkeypatch.setenv("GROQ_GENERATION_MODEL", "test/model")
+    monkeypatch.setenv("DATABASE_URL", "postgresql://fake")
 
     logged = []
     monkeypatch.setattr(main, "init_db", lambda: None)
@@ -32,7 +33,11 @@ def client(monkeypatch, tmp_path, sample_chunks):
 def test_health_reports_the_configured_model(client):
     response = client.get("/health")
     assert response.status_code == 200
-    assert response.json() == {"status": "ok", "generation_model": "test/model"}
+    assert response.json() == {
+        "status": "ok",
+        "generation_model": "test/model",
+        "monitoring": "enabled",
+    }
 
 
 def test_ask_returns_answer_sources_and_model(client, monkeypatch):
@@ -87,3 +92,56 @@ def test_temporary_provider_error_returns_503(client, monkeypatch):
 def test_feedback_validates_the_rating(client):
     assert client.post("/feedback", json={"conversation_id": 1, "rating": "up"}).status_code == 200
     assert client.post("/feedback", json={"conversation_id": 1, "rating": "meh"}).status_code == 422
+
+
+def test_without_database_the_assistant_still_answers(monkeypatch, tmp_path, sample_chunks):
+    """Lightweight cloud deploy: no DATABASE_URL, monitoring off, /ask keeps working."""
+    chunks_path = tmp_path / "chunks.jsonl"
+    chunks_path.write_text(
+        "\n".join(json.dumps(chunk, ensure_ascii=False) for chunk in sample_chunks),
+        encoding="utf-8",
+    )
+    monkeypatch.setenv("CHUNKS_PATH", str(chunks_path))
+    monkeypatch.delenv("DATABASE_URL", raising=False)
+    monkeypatch.setattr(
+        main,
+        "answer_question",
+        lambda question, chunks, model: {"answer": "respuesta", "sources": []},
+    )
+
+    with TestClient(main.app) as client:
+        assert client.get("/health").json()["monitoring"] == "disabled"
+
+        response = client.post("/ask", json={"question": "¿Qué es la tristeza bovina?"})
+        assert response.status_code == 200
+        assert response.json()["conversation_id"] is None
+
+        feedback = client.post("/feedback", json={"conversation_id": 1, "rating": "up"})
+        assert feedback.status_code == 503
+
+
+def test_question_quota_returns_429_without_calling_the_llm(monkeypatch, tmp_path, sample_chunks):
+    chunks_path = tmp_path / "chunks.jsonl"
+    chunks_path.write_text(
+        "\n".join(json.dumps(chunk, ensure_ascii=False) for chunk in sample_chunks),
+        encoding="utf-8",
+    )
+    monkeypatch.setenv("CHUNKS_PATH", str(chunks_path))
+    monkeypatch.setenv("MAX_QUESTIONS_PER_MINUTE", "2")
+    monkeypatch.delenv("DATABASE_URL", raising=False)
+    calls = []
+    monkeypatch.setattr(
+        main,
+        "answer_question",
+        lambda question, chunks, model: calls.append(question) or {"answer": "ok", "sources": []},
+    )
+
+    with TestClient(main.app) as client:
+        question = {"question": "¿Qué es la tristeza bovina?"}
+        assert client.post("/ask", json=question).status_code == 200
+        assert client.post("/ask", json=question).status_code == 200
+        blocked = client.post("/ask", json=question)
+
+    assert blocked.status_code == 429
+    assert int(blocked.headers["Retry-After"]) >= 1
+    assert len(calls) == 2

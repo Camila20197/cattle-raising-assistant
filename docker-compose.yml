@@ -1,8 +1,10 @@
 services:
+  # Ports are bound to 127.0.0.1: reachable only from this computer, not from
+  # other devices on the same Wi-Fi (Kestra can launch containers, Postgres holds data).
   api:
     build: .
     ports:
-      - "8000:8000"
+      - "127.0.0.1:8000:8000"
     env_file:
       - .env
     environment:
@@ -30,14 +32,14 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      # Host port 5433 avoids clashing with a locally installed PostgreSQL on 5432.
+      - "127.0.0.1:5433:5432"
 
   dashboard:
     build: .
 
-    command: uv run python -m streamlit run src/monitoring/dashboard.py --server.address 0.0.0.0 --server.port 8501
-
     environment:
+      - APP_MODE=dashboard
       - DATABASE_URL=postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
 
     depends_on:
@@ -45,21 +47,20 @@ services:
         condition: service_healthy
 
     ports:
-      - "8501:8501"
+      - "127.0.0.1:8501:8501"
 
   ui:
     build: .
 
-    command: uv run python -m streamlit run src/ui/chat_app.py --server.address 0.0.0.0 --server.port 8502
-
     environment:
+      - APP_MODE=ui
       - API_URL=http://api:8000
 
     depends_on:
       - api
 
     ports:
-      - "8502:8502"
+      - "127.0.0.1:8502:8502"
 
   kestra:
     image: kestra/kestra:latest
@@ -73,8 +74,9 @@ services:
       - /var/run/docker.sock:/var/run/docker.sock
       - /tmp:/tmp
     ports:
-      - "8080:8080"
+      - "127.0.0.1:8080:8080"
 volumes:
+
   app_data:
     name: cattle_raising_assistant_app_data
   kestra_data:

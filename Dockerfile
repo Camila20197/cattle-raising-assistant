@@ -21,5 +21,6 @@ COPY . .
 
 EXPOSE 8000
 
-# Shell form so ${PORT} can be overridden (e.g. by Cloud Run).
-CMD uv run uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}
+# One image, several roles: APP_MODE=api (default), ui or dashboard.
+# start.sh reads PORT, which Cloud Run sets automatically.
+CMD ["sh", "start.sh"]
