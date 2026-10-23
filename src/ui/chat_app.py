@@ -34,6 +34,12 @@ DOCUMENT_TITLES = {
         "Impacto de la sequía en la ganadería bovina de Gualeguaychú (INTA, 2026)",
     "INTA_CRSantaFe_EEARafaela_Nava_S_Guia_identificacion_especies_garrapatas_Entre_Rios.pdf":
         "Guía para identificar garrapatas de bovinos en Entre Ríos (INTA)",
+    "INTA_CRBsAs_EEABalcarce_Canton_GJ_Presentaci_n_casos_relevantes_diagn_stico.pdf":
+        "Casos relevantes de diagnóstico veterinario en bovinos (INTA Balcarce, 2026)",
+    "INTA_CRBsAsSur_EEACuencadelSalado_Maresca_S_Indices_reproductivos_rodeos_de_cria.pdf":
+        "Índices reproductivos en rodeos de cría (INTA, 2026)",
+    "INTA_CRLaPampa-SanLuis_EEAAnguil_Rojas_MDC_Suplementaci_n_microelementos_rendimiento_reproductivo_servicio.pdf":
+        "Suplementación con microelementos y rendimiento reproductivo (INTA, 2026)",
 }
 
 # H6 - Recognition rather than recall: ready-made questions to click.
@@ -42,6 +48,8 @@ EXAMPLE_QUESTIONS = [
     "¿Cómo afectó la sequía a la ganadería de Gualeguaychú?",
     "¿Qué enfermedades causa el alfaherpesvirus bovino tipo 1?",
     "¿Tiene la ivermectina efecto antiviral en bovinos?",
+    "¿Qué plantas tóxicas causaron intoxicaciones en bovinos?",
+    "¿Cuáles son los índices de preñez y destete de referencia en rodeos de cría?",
 ]
 
 WELCOME_MESSAGE = (

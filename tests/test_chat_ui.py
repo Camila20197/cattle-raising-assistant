@@ -32,3 +32,12 @@ def test_ambiguous_abbreviations_fall_back_to_a_readable_name():
     rewritten = friendly_citations("Dato [INTA…bovino.pdf: 2]")
     assert ".pdf" not in rewritten
     assert "pág. 2" in rewritten
+
+
+def test_every_document_in_the_knowledge_base_has_a_title():
+    from pathlib import Path
+
+    from src.ui.chat_app import DOCUMENT_TITLES
+
+    raw = {path.name for path in Path("data/raw").glob("*.pdf")}
+    assert raw <= set(DOCUMENT_TITLES), f"Missing titles for: {raw - set(DOCUMENT_TITLES)}"

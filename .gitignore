@@ -11,3 +11,7 @@ wheels/
 .env
 
 .claude/
+
+# Test coverage reports
+.coverage
+htmlcov/

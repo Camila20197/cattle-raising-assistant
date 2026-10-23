@@ -21,8 +21,18 @@ dependencies = [
 [dependency-groups]
 dev = [
     "pytest>=9.1.1",
+    "pytest-cov>=7.1.0",
 ]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]
+
+[tool.coverage.run]
+source = ["src", "main"]
+
+[tool.coverage.report]
+# src/ has no __init__.py files (namespace packages): without this, modules
+# no test imports (e.g. the dashboard) would be silently left out of the report.
+include_namespace_packages = true
+skip_empty = true

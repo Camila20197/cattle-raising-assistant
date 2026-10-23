@@ -7,6 +7,15 @@ import fitz  # PyMuPDF
 
 logger = logging.getLogger(__name__)
 
+# Typographic ligatures some PDFs use (e.g. "deﬁciencia" with a single "ﬁ"
+# glyph). Left as is, a search for "deficiencia" would never match them.
+LIGATURES = str.maketrans({"ﬀ": "ff", "ﬁ": "fi", "ﬂ": "fl", "ﬃ": "ffi", "ﬄ": "ffl"})
+
+
+def clean_text(text: str) -> str:
+    """Normalize extracted text so keyword search matches what people type."""
+    return text.translate(LIGATURES).strip()
+
 
 def load_pdfs(data_dir: Path) -> list[dict[str, str | int]]:
     """Load every PDF in ``data_dir`` and return one record per text page.
@@ -24,7 +33,7 @@ def load_pdfs(data_dir: Path) -> list[dict[str, str | int]]:
     for pdf_path in sorted(data_dir.glob("*.pdf")):
         with fitz.open(pdf_path) as pdf:
             for page_number, page in enumerate(pdf, start=1):
-                text = page.get_text("text", sort=True).strip()
+                text = clean_text(page.get_text("text", sort=True))
 
                 if not text:
                     skipped_pages += 1

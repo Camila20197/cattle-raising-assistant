@@ -48,3 +48,10 @@ def test_chunk_pages_keeps_source_metadata():
         "chunk_index": 1,
         "text": "contenido de la página",
     }
+
+
+def test_ligatures_are_normalized_for_search():
+    from src.ingestion.pdf_loader import clean_text
+
+    assert clean_text("  deﬁciencia de seleﬂ ") == "deficiencia de selefl"
+    assert clean_text("sin cambios: ñandú, 2,5%") == "sin cambios: ñandú, 2,5%"
